@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Sensor Store Reader - JIBCHAIN</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@4.3.0/dist/web3.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .status {
+            text-align: center;
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .data-display {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        input[type="text"] {
+            width: 400px;
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .field-item {
+            background-color: #e9ecef;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Secure Sensor Store Contract Reader</h1>
+        
+        <div id="connectionStatus" class="status disconnected">
+            Not Connected to Web3
+        </div>
+
+        <div class="section">
+            <h2>Connection Info</h2>
+            <p><strong>Network:</strong> JIBCHAIN L1 (Chain ID: 8899)</p>
+            <p><strong>Contract:</strong> <code>0x150b9E4FAdBCEEba67307B79b2b1BD624f8162D4</code></p>
+            <button onclick="connectWallet()">Connect Wallet</button>
+        </div>
+
+        <div class="section">
+            <h2>Contract Information</h2>
+            <button onclick="getOwner()">Get Owner</button>
+            <button onclick="getAuthorizedSensorCount()">Get Authorized Sensor Count</button>
+            <button onclick="getDataReadiness()">Check Data Readiness</button>
+            <button onclick="getAllFields()">Get All Fields</button>
+            <div id="contractInfo" class="data-display" style="display:none;"></div>
+        </div>
+
+        <div class="section">
+            <h2>Check Sensor Authorization</h2>
+            <input type="text" id="sensorAddress" placeholder="Enter sensor address (0x...)">
+            <button onclick="checkSensorAuth()">Check Authorization</button>
+            <button onclick="checkSensorData()">Check Has Data</button>
+            <div id="sensorAuthResult" class="data-display" style="display:none;"></div>
+        </div>
+
+        <div class="section">
+            <h2>Get Sensor Data</h2>
+            <input type="text" id="sensorDataAddress" placeholder="Enter sensor address (0x...)">
+            <button onclick="getLatestRecord()">Get Latest Record</button>
+            <div id="sensorDataResult" class="data-display" style="display:none;"></div>
+        </div>
+
+        <div class="section">
+            <h2>Fields Schema</h2>
+            <div id="fieldsDisplay" class="data-display" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const CONTRACT_ADDRESS = '0x150b9E4FAdBCEEba67307B79b2b1BD624f8162D4';
+        const RPC_URL = 'https://rpc-l1.jbc.xpool.pw';
+        const CHAIN_ID = 8899;
+
+        const CONTRACT_ABI = [
+            {"inputs":[{"components":[{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"unit","type":"string"},{"internalType":"string","name":"dtype","type":"string"}],"internalType":"struct SecureSensorStore.Field[]","name":"_fields","type":"tuple[]"},{"internalType":"address","name":"_owner","type":"address"},{"internalType":"address[]","name":"_initialSensors","type":"address[]"}],"stateMutability":"nonpayable","type":"constructor"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"newReadyBlock","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"previousBlock","type":"uint256"}],"name":"DataReadinessUpdated","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"count","type":"uint256"}],"name":"FieldSchemaSet","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"sensor","type":"address"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"},{"indexed":false,"internalType":"int256[]","name":"values","type":"int256[]"}],"name":"RecordStored","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"sensor","type":"address"}],"name":"SensorAuthorized","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"sensor","type":"address"}],"name":"SensorRevoked","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"sensor","type":"address"}],"name":"UnauthorizedAccessAttempt","type":"event"},
+            {"inputs":[{"internalType":"address","name":"sensor","type":"address"}],"name":"authorizeSensor","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address[]","name":"sensors","type":"address[]"}],"name":"authorizeSensors","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[],"name":"authorizedSensorCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"authorizedSensors","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"sensor","type":"address"}],"name":"clearSensorData","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[],"name":"dataReadyFromBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"fields","outputs":[{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"unit","type":"string"},{"internalType":"string","name":"dtype","type":"string"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"getAllFields","outputs":[{"components":[{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"unit","type":"string"},{"internalType":"string","name":"dtype","type":"string"}],"internalType":"struct SecureSensorStore.Field[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"blockNumber","type":"uint256"}],"name":"getDataReadiness","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"getField","outputs":[{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"sensor","type":"address"}],"name":"getLatestRecord","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"int256[]","name":"","type":"int256[]"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"getTotalFields","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"sensor","type":"address"}],"name":"hasData","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"hasSensorData","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"isDataReady","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"sensor","type":"address"}],"name":"isRecordReady","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"sensor","type":"address"}],"name":"isSensorAuthorized","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"latestRecord","outputs":[{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"sensor","type":"address"}],"name":"revokeSensor","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address[]","name":"sensors","type":"address[]"}],"name":"revokeSensors","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"int256[]","name":"_values","type":"int256[]"}],"name":"store","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"int256[]","name":"_values","type":"int256[]"}],"name":"storeWithAuthCheck","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"_newReadyBlock","type":"uint256"}],"name":"updateDataReadiness","outputs":[],"stateMutability":"nonpayable","type":"function"}
+        ];
+
+        let web3;
+        let contract;
+        let userAccount;
+
+        async function initWeb3() {
+            web3 = new Web3(RPC_URL);
+            contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+            updateConnectionStatus(false);
+        }
+
+        function updateConnectionStatus(connected) {
+            const statusEl = document.getElementById('connectionStatus');
+            if (connected) {
+                statusEl.className = 'status connected';
+                statusEl.textContent = `Connected: ${userAccount}`;
+            } else {
+                statusEl.className = 'status disconnected';
+                statusEl.textContent = 'Not Connected to Wallet (Read-Only Mode)';
+            }
+        }
+
+        async function connectWallet() {
+            if (window.ethereum) {
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: '0x' + CHAIN_ID.toString(16) }],
+                    });
+                    
+                    const accounts = await window.ethereum.request({ 
+                        method: 'eth_requestAccounts' 
+                    });
+                    
+                    web3 = new Web3(window.ethereum);
+                    contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+                    userAccount = accounts[0];
+                    updateConnectionStatus(true);
+                } catch (error) {
+                    alert('Error connecting wallet: ' + error.message);
+                }
+            } else {
+                alert('Please install MetaMask or another Web3 wallet');
+            }
+        }
+
+        async function getOwner() {
+            try {
+                const owner = await contract.methods.owner().call();
+                displayResult('contractInfo', `Owner: ${owner}`);
+            } catch (error) {
+                displayResult('contractInfo', `Error: ${error.message}`);
+            }
+        }
+
+        async function getAuthorizedSensorCount() {
+            try {
+                const count = await contract.methods.authorizedSensorCount().call();
+                displayResult('contractInfo', `Authorized Sensor Count: ${count}`);
+            } catch (error) {
+                displayResult('contractInfo', `Error: ${error.message}`);
+            }
+        }
+
+        async function getDataReadiness() {
+            try {
+                const isReady = await contract.methods.isDataReady().call();
+                const readyBlock = await contract.methods.dataReadyFromBlock().call();
+                const currentBlock = await web3.eth.getBlockNumber();
+                displayResult('contractInfo', 
+                    `Data Ready: ${isReady}\n` +
+                    `Ready From Block: ${readyBlock}\n` +
+                    `Current Block: ${currentBlock}`
+                );
+            } catch (error) {
+                displayResult('contractInfo', `Error: ${error.message}`);
+            }
+        }
+
+        async function getAllFields() {
+            try {
+                const fields = await contract.methods.getAllFields().call();
+                let fieldsHtml = '<h3>Fields Schema:</h3>';
+                fields.forEach((field, index) => {
+                    fieldsHtml += `<div class="field-item">
+                        <strong>Field ${index}:</strong><br>
+                        Name: ${field.name}<br>
+                        Unit: ${field.unit}<br>
+                        Type: ${field.dtype}
+                    </div>`;
+                });
+                document.getElementById('fieldsDisplay').innerHTML = fieldsHtml;
+                document.getElementById('fieldsDisplay').style.display = 'block';
+            } catch (error) {
+                displayResult('fieldsDisplay', `Error: ${error.message}`);
+            }
+        }
+
+        async function checkSensorAuth() {
+            const address = document.getElementById('sensorAddress').value;
+            if (!web3.utils.isAddress(address)) {
+                displayResult('sensorAuthResult', 'Invalid address format');
+                return;
+            }
+            try {
+                const isAuthorized = await contract.methods.isSensorAuthorized(address).call();
+                displayResult('sensorAuthResult', `Sensor ${address} is ${isAuthorized ? 'AUTHORIZED' : 'NOT AUTHORIZED'}`);
+            } catch (error) {
+                displayResult('sensorAuthResult', `Error: ${error.message}`);
+            }
+        }
+
+        async function checkSensorData() {
+            const address = document.getElementById('sensorAddress').value;
+            if (!web3.utils.isAddress(address)) {
+                displayResult('sensorAuthResult', 'Invalid address format');
+                return;
+            }
+            try {
+                const hasData = await contract.methods.hasData(address).call();
+                displayResult('sensorAuthResult', `Sensor ${address} ${hasData ? 'HAS DATA' : 'HAS NO DATA'}`);
+            } catch (error) {
+                displayResult('sensorAuthResult', `Error: ${error.message}`);
+            }
+        }
+
+        async function getLatestRecord() {
+            const address = document.getElementById('sensorDataAddress').value;
+            if (!web3.utils.isAddress(address)) {
+                displayResult('sensorDataResult', 'Invalid address format');
+                return;
+            }
+            try {
+                const result = await contract.methods.getLatestRecord(address).call();
+                const timestamp = result[0];
+                const values = result[1];
+                
+                const date = new Date(Number(timestamp) * 1000);
+                let output = `Latest Record for ${address}:\n`;
+                output += `Timestamp: ${timestamp} (${date.toLocaleString()})\n`;
+                output += `Values: [${values.join(', ')}]`;
+                
+                displayResult('sensorDataResult', output);
+            } catch (error) {
+                displayResult('sensorDataResult', `Error: ${error.message}`);
+            }
+        }
+
+        function displayResult(elementId, content) {
+            const element = document.getElementById(elementId);
+            element.textContent = content;
+            element.style.display = 'block';
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', initWeb3);
+    </script>
+</body>
+</html>
