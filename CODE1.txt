@@ -1,0 +1,1022 @@
+%%A1 = 6t 3 loop (1-234)
+clear;
+Itr = xlsread ('M_DATA_A.xlsx',1,'C1322:GP2917');
+Otr = xlsread ('M_DATA_A.xlsx',1,'GR1322:GR2917');
+It = xlsread ('M_DATA_A.xlsx',1,'C2:GP1321');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,3,{}, 'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('A_6T_3N_S1','.xls');
+	xlswrite (filen, b);
+
+%%A4 = 6t 3 loop (4-231)
+clear;
+Itr = xlsread ('M_DATA_A.xlsx',1,'C2:GP2117');
+Otr = xlsread ('M_DATA_A.xlsx',1,'GR2:GR2117');
+It = xlsread ('M_DATA_A.xlsx',1,'C2118:GP2917');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,3,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('A_6T_3N_S4','.xls');
+	xlswrite (filen, b);
+
+%%A1 = 6t 10 loop (1-234)
+clear;
+Itr = xlsread ('M_DATA_A.xlsx',1, 'C1322:GR2917'); 
+Otr = xlsread ('M_DATA_A.xlsx',1, 'GR1322:GR2917');
+It = xlsread ('M_DATA_A.xlsx',1,'C2:GP1321');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,10,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('A_6T_10N_S1','.xls');
+	xlswrite (filen, b);
+
+%%A4 = 6t 10 loop (4-231)
+clear;
+Itr = xlsread ('M_DATA_A.xlsx',1,'C2118:GP2917');
+Otr = xlsread ('M_DATA_A.xlsx',1,'GR2118:GR2917 ');
+It = xlsread ('M_DATA_A.xlsx',1,'C2:GP2117');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,10,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('A_6T_10N_S4','.xls');
+	xlswrite (filen, b);
+
+
+%%A1 = 12t 3 loop (1-234)
+clear;
+Itr = xlsread ('M_DATA_A.xlsx',1,'C1322 : GP2917');
+Otr = xlsread ('M_DATA_A.xlsx',1,'GS1322 : GS2917');
+It = xlsread ('M_DATA_A.xlsx',1, 'C2 : GP1321');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,3,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('A_12T_13N_S1','.xls');
+	xlswrite (filen, b);
+
+
+%%A4 = 12t 3 loop (4-231)
+clear;
+Itr = xlsread ('M_DATA_A.xlsx',1,'C2:GP2117 ');
+Otr = xlsread ('M_DATA_.xlsx',1,'GS2:GS2117');
+It = xlsread ('M_DATA_A.xlsx',1,'C2118:GP2917');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,3,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('A_12T_3N_S4','.xls');
+	xlswrite (filen, b);
+
+
+%%A1 = 12t 10 loop (1-234)
+clear;
+Itr = xlsread ('M_DATA_A.xlsx',1, 'C1322:GP2917')
+Otr = xlsread ('M_DATA_A.xlsx',1, 'GR1322:GR2917');
+It = xlsread ('M_DATA_A.xlsx',1, 'C2:GP1321');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,10,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('A_12T_10N_S1','.xls');
+	xlswrite (filen, b);
+
+%%A4 = 12t 10 loop (4-231)
+clear;
+Itr = xlsread ('M_DATA_A.xlsx',1,' C2 : GP2117');
+Otr = xlsread ('M_DATA_A.xlsx',1,' GS2 : GS2117 ');
+It = xlsread ('M_DATA_A.xlsx',1,' C2118 : GP2917');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,10,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('A_12T_10N_S4','.xls');
+	xlswrite (filen, b);
+
+%%A2 = 6t 3 loop (2-143) กลับตาราง
+clear;
+Itr = xlsread ('M_DATA_A.xlsx',2,'C605:GP2917');
+Otr = xlsread ('M_DATA_A.xlsx',2,'GR605:GR2917');
+It = xlsread ('M_DATA_A.xlsx',2,'C2:GP604');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,3,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('A_6T_3N_S2','.xls');
+	xlswrite (filen, b);
+
+
+%%A3 = 6t 3 loop (3-142)
+clear;
+Itr = xlsread ('M_DATA_A.xlsx',2,' C2:GP2724');
+Otr = xlsread ('M_DATA_A.xlsx',2,'GR2 :GR2724');
+It = xlsread ('M_DATA_A.xlsx',2,' C2725:GP2917');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,3,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('A_6T_3N_S3','.xls');
+	xlswrite (filen, b);
+
+
+%%A2 = 6t 10 loop (2-143)
+clear;
+Itr = xlsread ('M_DATA_A.xlsx',2,'C605:GP2917');
+Otr = xlsread ('M_DATA_A.xlsx',2,'GR605:GR2917');
+It = xlsread ('M_DATA_A.xlsx',2,'C2:GP604');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,10,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('A_6T_10N_S2','.xls');
+	xlswrite (filen, b);
+
+%%A3 = 6t 10 loop (3-142)
+
+clear;
+Itr = xlsread ('M_DATA_A.xlsx',2,'C2:GP2724');
+Otr = xlsread ('M_DATA_A.xlsx',2,'GR2:GR2724');
+It = xlsread ('M_DATA_A.xlsx',2,'C2725:GP2917');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,10,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('A_6T_10N_S3','.xls');
+	xlswrite (filen, b);
+
+
+%%A2 = 12t 3 loop (2-143)
+clear;
+Itr = xlsread ('M_DATA_A.xlsx',2,'C605:GP2917');
+Otr = xlsread ('M_DATA_A.xlsx',2,'GS605:GS2917');
+It = xlsread ('M_DATA_A.xlsx',2,'C2:GP604');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,3,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('A_12T_3N_S2','.xls');
+	xlswrite (filen, b);
+
+
+%%A3 = 12t 3 loop (3-142)
+clear;
+Itr = xlsread ('M_DATA_A.xlsx',2,' C2:GP2724');
+Otr = xlsread ('M_DATA_A.xlsx',2,'GS2:GS2724');
+It = xlsread ('M_DATA_A.xlsx',2,'C2725:GP2917');
+
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+
+l=20;
+b=[];
+f=[];
+
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,3,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('A_12T_3N_S3','.xls');
+	xlswrite (filen, b);
+
+
+%%A2 = 12t 10 loop (2-143)
+clear;
+Itr = xlsread ('M_DATA_A.xlsx',2,'C605:GP2917');
+Otr = xlsread ('M_DATA_A.xlsx',2,'GS605:GS2917');
+It = xlsread ('M_DATA_A.xlsx',2,'C2:GP604');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,10,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('A_12T_10N_S2','.xls');
+	xlswrite (filen, b);
+
+%%A3 = 12t 10 loop (3-142)
+clear;
+Itr = xlsread ('M_DATA_A.xlsx',2,' C2:GP2724');
+Otr = xlsread ('M_DATA_A.xlsx',2,' GS2:GS2724');
+It = xlsread ('M_DATA_A.xlsx',2,'C2725:GP2917');
+ Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,10,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('A_12T_10N_S3','.xls');
+	xlswrite (filen, b);
+
+
+%%B ตัดสถานี CD กับ P20
+
+%%B1 = 6t 3 loop (1-234)
+clear;
+Itr = xlsread ('M_DATA_B.xlsx',1,'C1322 :ES2917');
+Otr = xlsread ('M_DATA_B.xlsx',1,'EU1322 : EU2917');
+It = xlsread ('M_DATA_B.xlsx',1,'C2: ES1321');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,3,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+
+end
+filen = strcat ('A=B_6T_3N_S1','.xls');
+	xlswrite (filen, b);
+
+
+%%B4 = 6t 3 loop (4-123)
+clear;
+Itr = xlsread ('M_DATA_B.xlsx',1,'C2:ES2117');
+Otr = xlsread ('M_DATA_B.xlsx',1,'EU2:EU2117');
+It = xlsread ('M_DATA_B.xlsx',1,'C2118:ES2917');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,3,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('B_6T_3N_S4','.xls');
+	xlswrite (filen, b);
+
+
+%%B1 = 6t 10 loop (1-234)
+
+clear;
+Itr = xlsread ('M_DATA_B.xlsx',1,'C1322:ES2917');
+Otr = xlsread ('M_DATA_B.xlsx',1,'EU1322:EU2917');
+It = xlsread ('M_DATA_B.xlsx',1,'C2:ES1321');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,10,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('B_6T_10N_S1','.xls');
+	xlswrite (filen, b);
+
+%%B4 = 6t 10 loop (4-123)
+
+clear;
+Itr = xlsread ('M_DATA_B.xlsx',1,'C2:ES2117');
+Otr = xlsread ('M_DATA_B.xlsx',1,'EU2:EU2117');
+It = xlsread ('M_DATA_B.xlsx',1,'C2118:ES2917');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,10,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('B_6T_10N_S4','.xls');
+	xlswrite (filen, b);
+
+
+%%B1 = 12t 3 loop (1-234)
+clear;
+Itr = xlsread ('M_DATA_B.xlsx',1,'C1322:ES2917');
+Otr = xlsread ('M_DATA_B.xlsx',1,'EV1322:EV2917');
+It = xlsread ('M_DATA_B.xlsx',1,'C2:ES1321');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,3,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('B_12T_3N_S1','.xls');
+	xlswrite (filen, b);
+
+
+%%B4 = 12t 3 loop (4-123)
+clear;
+Itr = xlsread ('M_DATA_B.xlsx',1,'C2:ES2117');
+Otr = xlsread ('M_DATA_B.xlsx',1,'EV2:EV2117');
+It = xlsread ('M_DATA_B.xlsx',1,'C2118:ES2917');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,3,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('B_12T_3N_S4','.xls');
+	xlswrite (filen, b);
+
+
+%%B1 = 12t 10 loop (1-234)
+clear;
+Itr = xlsread ('M_DATA_B.xlsx',1,'C1322:ES2917');
+Otr = xlsread ('M_DATA_B.xlsx',1,'EV1322:EV2917');
+It = xlsread ('M_DATA_B.xlsx',1,'C2: ES1321');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,10,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('B_12T_10N_S1','.xls');
+	xlswrite (filen, b);
+
+%%B4 = 12t 10 loop (4-123)
+clear;
+Itr = xlsread ('M_DATA_B.xlsx',1,'C2:ES2117');
+Otr = xlsread ('M_DATA_B.xlsx',1,' EV2:EV2117');
+It = xlsread ('M_DATA_B.xlsx',1,'C2118:ES2917');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,10,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('B_12T_10N_S4','.xls');
+	xlswrite (filen, b);
+
+%%B2 = 6t 3 loop (1-234)
+clear;
+Itr = xlsread ('M_DATA_B.xlsx',2,'C605:ES2917');
+Otr = xlsread ('M_DATA_B.xlsx',2,'EU605:EU2917');
+It = xlsread ('M_DATA_B.xlsx',2,'C2:ES604');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,3,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('B_6T_3N_S1','.xls');
+	xlswrite (filen, b);
+
+
+%%B3 = 6t 3 loop (2-143)
+clear;
+Itr = xlsread ('M_DATA_B.xlsx',2,'C2 : ES2724');
+Otr = xlsread ('M_DATA_B.xlsx',2,'EU2 : EU2724');
+It = xlsread ('M_DATA_B.xlsx',2,'C2725 : ES2917');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,3,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('B_6T_3N_S2','.xls');
+	xlswrite (filen, b);
+
+
+%%B2 = 6t 10 loop (2-143)
+clear;
+Itr = xlsread ('M_DATA_B.xlsx',2,'C605:ES2917');
+Otr = xlsread ('M_DATA_B.xlsx',2,'EU605:EU2917');
+It = xlsread ('M_DATA_B.xlsx',2,'C2:ES604');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,10,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+
+end
+filen = strcat ('B_6T_10N_S2','.xls');
+	xlswrite (filen, b);
+
+%%B3 = 6t 10 loop (3-142)
+clear;
+Itr = xlsread ('M_DATA_B.xlsx',2,'C2 : ES2724');
+Otr = xlsread ('M_DATA_B.xlsx',2,'EU2 : EU2724');
+It = xlsread ('M_DATA_B.xlsx',2,'C2725 : ES2917');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,10,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('B_6T_10N_S3','.xls');
+	xlswrite (filen, b);
+
+
+%%B2 = 12t 3 loop (2-143)
+clear;
+Itr = xlsread ('M_DATA_B.xlsx',2,'C605:ES2917');
+Otr = xlsread ('M_DATA_B.xlsx',2,'EV605:EV2917');
+It = xlsread ('M_DATA_B.xlsx',2,'C2:ES604');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,3,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('B_12T_3N_S2','.xls');
+	xlswrite (filen, b);
+
+
+%%B3 = 12t 3 loop (3-142)
+clear;
+Itr = xlsread ('M_DATA_B.xlsx',2,'C2 : ES2724');
+Otr = xlsread ('M_DATA_B.xlsx',2,'EV2 : EV2724');
+It = xlsread ('M_DATA_B.xlsx',2,'C2725 : ES2917');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,3,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('B_12T_3N_S3','.xls');
+	xlswrite (filen, b);
+
+
+%%B2 = 12t 10 loop (2-143)
+clear;
+Itr = xlsread ('M_DATA_B.xlsx',2,'C605 : ES2917');
+Otr = xlsread ('M_DATA_B.xlsx',2,'EV605 : EV2917');
+It = xlsread ('M_DATA_B.xlsx',2,'C2: ES604');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,10,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('B_12T_10N_S2','.xls');
+	xlswrite (filen, b);
+
+%%B3 = 12t 10 loop (3-142)
+clear;
+Itr = xlsread ('M_DATA_B.xlsx',2,'C2 : ES2724');
+Otr = xlsread ('M_DATA_B.xlsx',2,'EV2 : EV2724');
+It = xlsread ('M_DATA_B.xlsx',2,'C2725 : ES2917');
+Itrt = transpose(Itr);
+Otrt = transpose(Otr);
+Itt = transpose(It);
+[TrInput,TrInputNor] = mapminmax(Itrt);
+[TrOutput,TrOutputNor] = mapminmax(Otrt);
+[TestInput,TestInputNor] = mapminmax(Itt);
+Test.P = TestInput;
+l=20;
+b=[];
+f=[];
+parfor loop1= 1:l
+    net = newff(TrInput,TrOutput,10,{},'trainlm');
+    net = init (net);
+    [net,tr] = train(net,TrInput,TrOutput);
+    training =sim(net,TrInput);
+    trainingN = mapminmax('reverse', training, TrOutputNor);
+    trainingN = trainingN';
+    [Y] = sim(net,TestInput);
+    YN = mapminmax('reverse', Y, TrOutputNor);
+    YN = YN';
+    b(:,loop1)=YN;
+    f(:,loop1)=trainingN;
+end
+filen = strcat ('B_12T_10N_S3','.xls');
+	xlswrite (filen, b);
