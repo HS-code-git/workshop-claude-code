@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Contract Reader - JIBCHAIN (Viem)</title>
+    <script type="module">
+        import { createPublicClient, http, formatUnits } from 'https://esm.sh/viem@2.7.1';
+        
+        const CONTRACT_ADDRESS = '0x150b9E4FAdBCEEba67307B79b2b1BD624f8162D4';
+        
+        const CONTRACT_ABI = [
+            {
+                "inputs": [],
+                "name": "owner",
+                "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "authorizedSensorCount",
+                "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "dataReadyFromBlock",
+                "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "isDataReady",
+                "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getTotalFields",
+                "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getAllFields",
+                "outputs": [{
+                    "components": [
+                        {"internalType": "string", "name": "name", "type": "string"},
+                        {"internalType": "string", "name": "unit", "type": "string"},
+                        {"internalType": "string", "name": "dtype", "type": "string"}
+                    ],
+                    "internalType": "struct SecureSensorStore.Field[]",
+                    "name": "",
+                    "type": "tuple[]"
+                }],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "address", "name": "sensor", "type": "address"}],
+                "name": "isSensorAuthorized",
+                "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "address", "name": "sensor", "type": "address"}],
+                "name": "hasData",
+                "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "address", "name": "sensor", "type": "address"}],
+                "name": "getLatestRecord",
+                "outputs": [
+                    {"internalType": "uint256", "name": "", "type": "uint256"},
+                    {"internalType": "int256[]", "name": "", "type": "int256[]"}
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "uint256", "name": "index", "type": "uint256"}],
+                "name": "getField",
+                "outputs": [
+                    {"internalType": "string", "name": "", "type": "string"},
+                    {"internalType": "string", "name": "", "type": "string"},
+                    {"internalType": "string", "name": "", "type": "string"}
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+        // Define JIBCHAIN
+        const jibchain = {
+            id: 8899,
+            name: 'JIBCHAIN L1',
+            network: 'jibchain',
+            nativeCurrency: {
+                decimals: 18,
+                name: 'JBC',
+                symbol: 'JBC',
+            },
+            rpcUrls: {
+                default: {
+                    http: ['https://rpc-l1.jbc.xpool.pw'],
+                },
+                public: {
+                    http: ['https://rpc-l1.jbc.xpool.pw'],
+                },
+            },
+        };
+
+        // Create public client (no wallet needed)
+        const publicClient = createPublicClient({
+            chain: jibchain,
+            transport: http('https://rpc-l1.jbc.xpool.pw'),
+        });
+
+        // Make functions globally available
+        window.publicClient = publicClient;
+        window.CONTRACT_ADDRESS = CONTRACT_ADDRESS;
+        window.CONTRACT_ABI = CONTRACT_ABI;
+
+        // Contract read functions
+        window.getOwner = async function() {
+            try {
+                const owner = await publicClient.readContract({
+                    address: CONTRACT_ADDRESS,
+                    abi: CONTRACT_ABI,
+                    functionName: 'owner',
+                });
+                displayResult('contractInfo', `Owner: ${owner}`);
+            } catch (error) {
+                displayResult('contractInfo', `Error: ${error.message}`);
+            }
+        }
+
+        window.getAuthorizedSensorCount = async function() {
+            try {
+                const count = await publicClient.readContract({
+                    address: CONTRACT_ADDRESS,
+                    abi: CONTRACT_ABI,
+                    functionName: 'authorizedSensorCount',
+                });
+                displayResult('contractInfo', `Authorized Sensor Count: ${count}`);
+            } catch (error) {
+                displayResult('contractInfo', `Error: ${error.message}`);
+            }
+        }
+
+        window.getDataReadiness = async function() {
+            try {
+                const [isReady, readyBlock] = await Promise.all([
+                    publicClient.readContract({
+                        address: CONTRACT_ADDRESS,
+                        abi: CONTRACT_ABI,
+                        functionName: 'isDataReady',
+                    }),
+                    publicClient.readContract({
+                        address: CONTRACT_ADDRESS,
+                        abi: CONTRACT_ABI,
+                        functionName: 'dataReadyFromBlock',
+                    })
+                ]);
+                const currentBlock = await publicClient.getBlockNumber();
+                displayResult('contractInfo', 
+                    `Data Ready: ${isReady}\n` +
+                    `Ready From Block: ${readyBlock}\n` +
+                    `Current Block: ${currentBlock}`
+                );
+            } catch (error) {
+                displayResult('contractInfo', `Error: ${error.message}`);
+            }
+        }
+
+        window.getAllFields = async function() {
+            try {
+                const fields = await publicClient.readContract({
+                    address: CONTRACT_ADDRESS,
+                    abi: CONTRACT_ABI,
+                    functionName: 'getAllFields',
+                });
+                let fieldsHtml = '<h3>Fields Schema:</h3>';
+                fields.forEach((field, index) => {
+                    fieldsHtml += `<div class="field-item">
+                        <strong>Field ${index}:</strong><br>
+                        Name: ${field.name}<br>
+                        Unit: ${field.unit}<br>
+                        Type: ${field.dtype}
+                    </div>`;
+                });
+                document.getElementById('fieldsDisplay').innerHTML = fieldsHtml;
+                document.getElementById('fieldsDisplay').style.display = 'block';
+            } catch (error) {
+                displayResult('fieldsDisplay', `Error: ${error.message}`);
+            }
+        }
+
+        window.checkSensorAuth = async function() {
+            const address = document.getElementById('sensorAddress').value;
+            if (!address || address.length !== 42 || !address.startsWith('0x')) {
+                displayResult('sensorAuthResult', 'Invalid address format');
+                return;
+            }
+            try {
+                const isAuthorized = await publicClient.readContract({
+                    address: CONTRACT_ADDRESS,
+                    abi: CONTRACT_ABI,
+                    functionName: 'isSensorAuthorized',
+                    args: [address],
+                });
+                displayResult('sensorAuthResult', `Sensor ${address} is ${isAuthorized ? 'AUTHORIZED' : 'NOT AUTHORIZED'}`);
+            } catch (error) {
+                displayResult('sensorAuthResult', `Error: ${error.message}`);
+            }
+        }
+
+        window.checkSensorData = async function() {
+            const address = document.getElementById('sensorAddress').value;
+            if (!address || address.length !== 42 || !address.startsWith('0x')) {
+                displayResult('sensorAuthResult', 'Invalid address format');
+                return;
+            }
+            try {
+                const hasData = await publicClient.readContract({
+                    address: CONTRACT_ADDRESS,
+                    abi: CONTRACT_ABI,
+                    functionName: 'hasData',
+                    args: [address],
+                });
+                displayResult('sensorAuthResult', `Sensor ${address} ${hasData ? 'HAS DATA' : 'HAS NO DATA'}`);
+            } catch (error) {
+                displayResult('sensorAuthResult', `Error: ${error.message}`);
+            }
+        }
+
+        window.getLatestRecord = async function() {
+            const address = document.getElementById('sensorDataAddress').value;
+            if (!address || address.length !== 42 || !address.startsWith('0x')) {
+                displayResult('sensorDataResult', 'Invalid address format');
+                return;
+            }
+            try {
+                const [timestamp, values] = await publicClient.readContract({
+                    address: CONTRACT_ADDRESS,
+                    abi: CONTRACT_ABI,
+                    functionName: 'getLatestRecord',
+                    args: [address],
+                });
+                
+                const date = new Date(Number(timestamp) * 1000);
+                let output = `Latest Record for ${address}:\n`;
+                output += `Timestamp: ${timestamp} (${date.toLocaleString()})\n`;
+                output += `Values: [${values.map(v => v.toString()).join(', ')}]`;
+                
+                displayResult('sensorDataResult', output);
+            } catch (error) {
+                displayResult('sensorDataResult', `Error: ${error.message}`);
+            }
+        }
+
+        window.displayResult = function(elementId, content) {
+            const element = document.getElementById(elementId);
+            element.textContent = content;
+            element.style.display = 'block';
+        }
+
+        // Check connection on load
+        window.addEventListener('load', async () => {
+            try {
+                const blockNumber = await publicClient.getBlockNumber();
+                document.getElementById('connectionStatus').className = 'status connected';
+                document.getElementById('connectionStatus').textContent = `Connected to JIBCHAIN - Block: ${blockNumber}`;
+            } catch (error) {
+                document.getElementById('connectionStatus').textContent = `Connection Error: ${error.message}`;
+            }
+        });
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .info-badge {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-align: center;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .status {
+            text-align: center;
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .data-display {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        input[type="text"] {
+            width: 400px;
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .field-item {
+            background-color: #e9ecef;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sensor Contract Reader (Viem)</h1>
+        
+        <div class="info-badge">
+            📖 Read-Only Mode - No wallet connection required!
+        </div>
+
+        <div id="connectionStatus" class="status disconnected">
+            Connecting to JIBCHAIN...
+        </div>
+
+        <div class="section">
+            <h2>Network Information</h2>
+            <p><strong>Network:</strong> JIBCHAIN L1 (Chain ID: 8899)</p>
+            <p><strong>RPC:</strong> <code>https://rpc-l1.jbc.xpool.pw</code></p>
+            <p><strong>Contract:</strong> <code>0x150b9E4FAdBCEEba67307B79b2b1BD624f8162D4</code></p>
+        </div>
+
+        <div class="section">
+            <h2>Contract Information</h2>
+            <button onclick="getOwner()">Get Owner</button>
+            <button onclick="getAuthorizedSensorCount()">Get Authorized Sensor Count</button>
+            <button onclick="getDataReadiness()">Check Data Readiness</button>
+            <button onclick="getAllFields()">Get All Fields</button>
+            <div id="contractInfo" class="data-display" style="display:none;"></div>
+        </div>
+
+        <div class="section">
+            <h2>Check Sensor</h2>
+            <input type="text" id="sensorAddress" placeholder="Enter sensor address (0x...)">
+            <button onclick="checkSensorAuth()">Check Authorization</button>
+            <button onclick="checkSensorData()">Check Has Data</button>
+            <div id="sensorAuthResult" class="data-display" style="display:none;"></div>
+        </div>
+
+        <div class="section">
+            <h2>Get Sensor Data</h2>
+            <input type="text" id="sensorDataAddress" placeholder="Enter sensor address (0x...)">
+            <button onclick="getLatestRecord()">Get Latest Record</button>
+            <div id="sensorDataResult" class="data-display" style="display:none;"></div>
+        </div>
+
+        <div class="section">
+            <h2>Fields Schema</h2>
+            <div id="fieldsDisplay" class="data-display" style="display:none;"></div>
+        </div>
+    </div>
+</body>
+</html>
